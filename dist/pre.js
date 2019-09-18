@@ -39,28 +39,34 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 exports.__esModule = true;
 var puppeteer_1 = __importDefault(require("puppeteer"));
+var utils_1 = require("./utils");
+var print_1 = __importDefault(require("./print"));
 function pre(url) {
     return __awaiter(this, void 0, void 0, function () {
-        var browser, page, performanceTiming, _a, _b;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
+        var browser, page, navigationTiming;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
                 case 0: return [4 /*yield*/, puppeteer_1["default"].launch()];
                 case 1:
-                    browser = _c.sent();
+                    browser = _a.sent();
                     return [4 /*yield*/, browser.newPage()];
                 case 2:
-                    page = _c.sent();
-                    return [4 /*yield*/, page.goto(url)];
+                    page = _a.sent();
+                    return [4 /*yield*/, page.goto(utils_1.getValidHttpRequest(url))];
                 case 3:
-                    _c.sent();
-                    _b = (_a = JSON).parse;
-                    return [4 /*yield*/, page.evaluate(function () { return JSON.stringify(window.performance.timing); })];
+                    _a.sent();
+                    return [4 /*yield*/, page.evaluate(function () {
+                            var performance = window.performance;
+                            var navigationTiming = performance.getEntriesByType('navigation')[0];
+                            return navigationTiming.toJSON();
+                        })];
                 case 4:
-                    performanceTiming = _b.apply(_a, [_c.sent()]);
+                    navigationTiming = _a.sent();
                     return [4 /*yield*/, browser.close()];
                 case 5:
-                    _c.sent();
-                    return [2 /*return*/, performanceTiming];
+                    _a.sent();
+                    print_1["default"](navigationTiming);
+                    return [2 /*return*/, navigationTiming];
             }
         });
     });
